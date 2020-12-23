@@ -1,10 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import { authenticate } from "./authenticate";
 import { HelloWorldPanel } from "./HelloWorldPanel";
 import { SidebarProvider } from "./SidebarProvider";
+import { TokenManager } from "./TokenManager";
 
 export function activate(context: vscode.ExtensionContext) {
+  TokenManager.globalState = context.globalState;
+
   const sidebarProvider = new SidebarProvider(context.extensionUri);
 
   const item = vscode.window.createStatusBarItem(
@@ -40,7 +44,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("vstodo.helloWorld", () => {
-      HelloWorldPanel.createOrShow(context.extensionUri);
+      vscode.window.showInformationMessage(
+        "token value is: " + TokenManager.getToken()
+      );
+      // HelloWorldPanel.createOrShow(context.extensionUri);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("vstodo.authenticate", () => {
+      try {
+        authenticate();
+      } catch (err) {
+        console.log(err);
+      }
     })
   );
 
