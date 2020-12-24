@@ -17,7 +17,7 @@ export class Todo extends BaseEntity {
   text: string;
 
   @Column("boolean", { default: false })
-  completed: string;
+  completed: boolean;
 
   @Column()
   creatorId: number;

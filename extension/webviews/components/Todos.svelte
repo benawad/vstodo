@@ -62,8 +62,19 @@
     {#each todos as todo (todo.id)}
         <li
             class:complete={todo.completed}
-            on:click={() => {
+            on:click={async () => {
                 todo.completed = !todo.completed;
+                const response = await fetch(`${apiBaseUrl}/todo`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        id: todo.id,
+                    }),
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                console.log(await response.json());
             }}>
             {todo.text}
         </li>
