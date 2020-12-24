@@ -72,6 +72,15 @@ const main = async () => {
     }
   );
 
+  app.get("/todo", isAuth, async (req: any, res) => {
+    const todos = await Todo.find({
+      where: { creatorId: req.userId },
+      order: { id: "DESC" },
+    });
+
+    res.send({ todos });
+  });
+
   app.post("/todo", isAuth, async (req: any, res) => {
     const todo = await Todo.create({
       text: req.body.text,

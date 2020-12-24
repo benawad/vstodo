@@ -5,20 +5,40 @@
     export let user: User;
     export let accessToken: string;
     let text = "";
-    let todos: Array<{ text: string; completed: boolean }> = [];
+    let todos: Array<{ text: string; completed: boolean; id: number }> = [];
+
+    async function addTodo(t: string) {
+        const response = await fetch(`${apiBaseUrl}/todo`, {
+            method: "POST",
+            body: JSON.stringify({
+                text: t,
+            }),
+            headers: {
+                "content-type": "application/json",
+                authorization: `Bearer ${accessToken}`,
+            },
+        });
+        const { todo } = await response.json();
+        todos = [todo, ...todos];
+    }
 
     onMount(async () => {
         window.addEventListener("message", async (event) => {
             const message = event.data;
             switch (message.type) {
                 case "new-todo":
-                    todos = [
-                        { text: message.value, completed: false },
-                        ...todos,
-                    ];
+                    addTodo(message.value);
                     break;
             }
         });
+
+        const response = await fetch(`${apiBaseUrl}/todo`, {
+            headers: {
+                authorization: `Bearer ${accessToken}`,
+            },
+        });
+        const payload = await response.json();
+        todos = payload.todos;
     });
 </script>
 
@@ -32,26 +52,14 @@
 
 <form
     on:submit|preventDefault={async () => {
-        // todos = [{ text, completed: false }, ...todos];
-        const response = await fetch(`${apiBaseUrl}/todo`, {
-            method: 'POST',
-            body: JSON.stringify({
-                text,
-            }),
-            headers: {
-                'content-type': 'application/json',
-                authorization: `Bearer ${accessToken}`,
-            },
-        });
-        const { todo } = await response.json();
-        todos = [todo, ...todos];
+        addTodo(text);
         text = '';
     }}>
     <input bind:value={text} />
 </form>
 
 <ul>
-    {#each todos as todo (todo.text)}
+    {#each todos as todo (todo.id)}
         <li
             class:complete={todo.completed}
             on:click={() => {
