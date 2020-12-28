@@ -1,7 +1,5 @@
-import { RequestHandler, Request } from "express";
+import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-
-export type ReqWithUserId = Request<{}, any, any, {}> & { userId: number };
 
 export const isAuth: RequestHandler<{}, any, any, {}> = (req, _, next) => {
   const authHeader = req.headers.authorization;
@@ -16,7 +14,7 @@ export const isAuth: RequestHandler<{}, any, any, {}> = (req, _, next) => {
 
   try {
     const payload: any = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    (req as any).userId = payload.userId;
+    req.userId = payload.userId;
     next();
     return;
   } catch {}

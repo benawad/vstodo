@@ -10,7 +10,7 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import { Todo } from "./entities/Todo";
-import { isAuth, ReqWithUserId } from "./isAuth";
+import { isAuth } from "./isAuth";
 
 const main = async () => {
   await createConnection({
@@ -72,7 +72,7 @@ const main = async () => {
     }
   );
 
-  app.get("/todo", isAuth, async (req: any, res) => {
+  app.get("/todo", isAuth, async (req, res) => {
     const todos = await Todo.find({
       where: { creatorId: req.userId },
       order: { id: "DESC" },
@@ -81,7 +81,7 @@ const main = async () => {
     res.send({ todos });
   });
 
-  app.post("/todo", isAuth, async (req: any, res) => {
+  app.post("/todo", isAuth, async (req, res) => {
     const todo = await Todo.create({
       text: req.body.text,
       creatorId: req.userId,
@@ -89,7 +89,7 @@ const main = async () => {
     res.send({ todo });
   });
 
-  app.put("/todo", isAuth, async (req: any, res) => {
+  app.put("/todo", isAuth, async (req, res) => {
     const todo = await Todo.findOne(req.body.id);
     if (!todo) {
       res.send({ todo: null });
