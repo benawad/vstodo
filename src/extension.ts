@@ -31,6 +31,11 @@ export function activate(context: vscode.ExtensionContext) {
         activeTextEditor.selection
       );
 
+      if (!text) {
+        vscode.window.showInformationMessage("No active text selection");
+        return;
+      }
+
       sidebarProvider._view?.webview.postMessage({
         type: "new-todo",
         value: text,
@@ -52,11 +57,11 @@ export function activate(context: vscode.ExtensionContext) {
       await vscode.commands.executeCommand(
         "workbench.view.extension.vstodo-sidebar-view"
       );
-      // setTimeout(() => {
-      //   vscode.commands.executeCommand(
-      //     "workbench.action.webview.openDeveloperTools"
-      //   );
-      // }, 500);
+      setTimeout(() => {
+        vscode.commands.executeCommand(
+          "workbench.action.webview.openDeveloperTools"
+        );
+      }, 500);
     })
   );
 
